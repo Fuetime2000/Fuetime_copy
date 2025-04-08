@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div class="position-relative mb-3">
+                        <img src="{{ url_for('static', filename='uploads/' + user.photo) if user.photo else url_for('static', filename='img/default-avatar.png') }}"
+                             class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                        <label for="photo-upload" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2" 
+                               style="cursor: pointer;" title="Change photo">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                    </div>
+                    <h5 class="mb-1">{{ user.full_name }}</h5>
+                    <p class="text-muted mb-3">{{ user.work }}</p>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            <i class="fas fa-user-times"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="list-group shadow-sm">
+                <button class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#profile">
+                    <i class="fas fa-user me-2"></i> Profile
+                </button>
+                <button class="list-group-item list-group-item-action" data-bs-toggle="list" href="#security">
+                    <i class="fas fa-shield-alt me-2"></i> Security
+                </button>
+                <button class="list-group-item list-group-item-action" data-bs-toggle="list" href="#notifications">
+                    <i class="fas fa-bell me-2"></i> Notifications
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Profile Section -->
+                <div class="tab-pane fade show active" id="profile">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Edit Profile</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" enctype="multipart/form-data" id="profile-form">
+                                <input type="hidden" name="action" value="update_profile">
+                                <input type="file" id="photo-upload" name="photo" class="d-none" accept="image/*">
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" name="full_name" class="form-control" value="{{ user.full_name }}" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" name="phone" class="form-control" value="{{ user.phone }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Age</label>
+                                        <input type="number" name="age" class="form-control" value="{{ user.age }}">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Mother's Name</label>
+                                        <input type="text" name="mother_name" class="form-control" value="{{ user.mother_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Father's Name</label>
+                                        <input type="text" name="father_name" class="form-control" value="{{ user.father_name }}">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Current Location</label>
+                                        <input type="text" name="current_location" class="form-control" value="{{ user.current_location }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Permanent Address</label>
+                                        <input type="text" name="live_location" class="form-control" value="{{ user.live_location }}">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Work/Profession</label>
+                                        <input type="text" name="work" class="form-control" value="{{ user.work }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Experience</label>
+                                        <select name="experience" class="form-select">
+                                            <option value="0-1 year" {% if user.experience == '0-1 year' %}selected{% endif %}>0-1 year</option>
+                                            <option value="1-3 years" {% if user.experience == '1-3 years' %}selected{% endif %}>1-3 years</option>
+                                            <option value="3-5 years" {% if user.experience == '3-5 years' %}selected{% endif %}>3-5 years</option>
+                                            <option value="5+ years" {% if user.experience == '5+ years' %}selected{% endif %}>5+ years</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Education</label>
+                                        <input type="text" name="education" class="form-control" value="{{ user.education }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Categories</label>
+                                        <select name="categories" class="form-select">
+                                            <option value="Plumber" {% if user.categories == 'Plumber' %}selected{% endif %}>Plumber</option>
+                                            <option value="Electrician" {% if user.categories == 'Electrician' %}selected{% endif %}>Electrician</option>
+                                            <option value="Carpenter" {% if user.categories == 'Carpenter' %}selected{% endif %}>Carpenter</option>
+                                            <option value="Painter" {% if user.categories == 'Painter' %}selected{% endif %}>Painter</option>
+                                            <option value="Cleaner" {% if user.categories == 'Cleaner' %}selected{% endif %}>Cleaner</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Payment Rate (₹)</label>
+                                        <input type="number" name="payment_charge" class="form-control" value="{{ user.payment_charge }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Payment Type</label>
+                                        <select name="payment_type" class="form-select">
+                                            <option value="per hour" {% if user.payment_type == 'per hour' %}selected{% endif %}>Per Hour</option>
+                                            <option value="per day" {% if user.payment_type == 'per day' %}selected{% endif %}>Per Day</option>
+                                            <option value="per job" {% if user.payment_type == 'per job' %}selected{% endif %}>Per Job</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Skills (comma-separated)</label>
+                                    <input type="text" name="skills" class="form-control" value="{{ user.skills }}"
+                                           placeholder="e.g., Plumbing, Pipe Fitting, Bathroom Fixtures">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Bio</label>
+                                    <textarea name="bio" class="form-control" rows="3">{{ user.bio }}</textarea>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Section -->
+                <div class="tab-pane fade" id="security">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Change Password</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                <input type="hidden" name="action" value="change_password">
+                                <div class="mb-3">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" name="current_password" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" name="new_password" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" name="confirm_password" class="form-control" required>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-key"></i> Change Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="tab-pane fade" id="notifications">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Notification Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                                <label class="form-check-label" for="emailNotif">Email Notifications</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="messageNotif" checked>
+                                <label class="form-check-label" for="messageNotif">Message Notifications</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="reviewNotif" checked>
+                                <label class="form-check-label" for="reviewNotif">Review Notifications</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Warning: This action cannot be undone. All your data will be permanently deleted.
+                </p>
+                <form method="POST" id="delete-form">
+                    <input type="hidden" name="action" value="delete_account">
+                    <div class="mb-3">
+                        <label class="form-label">Enter your password to confirm</label>
+                        <input type="password" name="confirm_delete_password" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="delete-form" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Delete Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle profile photo upload
+document.getElementById('photo-upload').addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+        document.getElementById('profile-form').submit();
+    }
+});
+
+// Initialize tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+});
+</script>
+
+<style>
+.list-group-item {
+    border: none;
+    padding: 0.75rem 1.25rem;
+}
+
+.list-group-item.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.list-group-item:not(.active):hover {
+    background-color: #f8f9fa;
+}
+
+.card {
+    border: none;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: none;
+}
+</style>
+{% endblock %}
